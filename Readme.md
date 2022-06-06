@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм»
 
 * Студент: [Роман Бизикин](https://up.htmlacademy.ru/javascript/26/user/98379).
-* Наставник: `Неизвестно`.
+* Наставник: [Антон Попов](https://htmlacademy.ru/profile/joker).
 
 ---
 
