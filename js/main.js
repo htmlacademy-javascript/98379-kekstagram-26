@@ -2,12 +2,12 @@ const MAX_STRING_LENGTH = 140;
 
 function getRandomNum(minNum, maxNum) {
   if (maxNum <= minNum) {
-    return alert('Второе число должно быть больше первого');
+    //return alert('Второе число должно быть больше первого');
   }
   if (minNum >= 0) {
     return Math.floor(Math.random() * (maxNum - minNum) + minNum);
   } else {
-    return alert('Число должно быть больше нуля, либо равно ему');
+    //return alert('Число должно быть больше нуля, либо равно ему');
   }
 }
 
