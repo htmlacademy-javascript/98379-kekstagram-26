@@ -83,4 +83,4 @@ const createPublication = () => ({
 
 });
 
-export { getRandomPositiveInteger, checkStringLength, getRandomPositiveIntegerForPublication, createPublication };
+export { createPublication };
