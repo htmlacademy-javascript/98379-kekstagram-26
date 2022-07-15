@@ -1,4 +1,5 @@
-const MAX_STRING_LENGTH = 140;
+import {getRandomPositiveInteger} from './util.js';
+
 const PHOTO_DESC = [
   'Хорошая фотография!',
   'Блин, а горизонт то завален',
@@ -36,21 +37,6 @@ const createPublicationCommentsArray = () => {
   ];
   return CommentsArray;
 };
-
-function getRandomPositiveInteger(a, b) {
-  const lower = Math.ceil(Math.min(Math.abs(a), Math.abs(b)));
-  const upper = Math.floor(Math.max(Math.abs(a), Math.abs(b)));
-  const result = Math.random() * (upper - lower + 1) + lower;
-  return Math.floor(result);
-}
-
-const checkStringLength = function(string, maxLength) {
-  return string.length <= maxLength;
-};
-
-getRandomPositiveInteger(12, 123);
-checkStringLength('sdcsa', MAX_STRING_LENGTH);
-
 
 function getRandomPositiveIntegerForPublication(a, b, array) {
   let result;
