@@ -8,7 +8,7 @@ const template = templatePicture.querySelector('a');
 const fragment = document.createDocumentFragment();
 
 const bigPicture = document.querySelector('.big-picture');
-const bigPictureComments = bigPicture.querySelectorAll('.social__comment');
+const bigPictureComments = bigPicture.querySelector('.social__comments');
 
 
 function renderMiniatures() {
@@ -26,12 +26,10 @@ function renderMiniatures() {
 
       const commentsObj = publication.comments;
       const descObj = publication.description;
-      renderPopupComments(bigPictureComments, commentsObj, 2);
+      renderPopupComments(bigPictureComments, commentsObj, commentsObj.length);
 
       bigPicture.querySelector('.social__caption').textContent = descObj;
 
-      bigPicture.querySelector('.social__comment-count').classList.add('hidden');
-      bigPicture.querySelector('.comments-loader').classList.add('hidden');
 
       document.querySelector('body').classList.add('modal-open');
     });
