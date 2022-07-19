@@ -69,4 +69,4 @@ const createPublication = () => ({
 
 });
 
-export { createPublication };
+export {createPublication};

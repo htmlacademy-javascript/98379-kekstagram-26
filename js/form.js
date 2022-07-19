@@ -1,4 +1,6 @@
-import { isEscPressed } from './util.js';
+import {isEscPressed} from './util.js';
+import {onFilterButtonChange, effectList, sliderWrapper, imgPreview} from './filters.js';
+import {addScalingEventListeners, removeScalingEventListeners} from './scale-control.js';
 
 
 const MAX_STRING_LENGTH = 140;
@@ -15,6 +17,7 @@ const btnCancel = imgUpload.querySelector('.img-upload__cancel');
 const hashtagField = imgUpload.querySelector('.text__hashtags');
 const commentField = imgUpload.querySelector('.text__description');
 const hashtagRegex = /^#[A-Za-zА-Яа-яЁё0-9]{1,19}$/;
+
 
 // Реализуем открытие и закрытие формы
 
@@ -34,6 +37,11 @@ uploadFileField.addEventListener('change', () => {
   body.classList.add('modal-open');
   btnCancel.addEventListener('click', onPopupCloseButtonClick);
   document.addEventListener('keydown', onPopupEscKeydown);
+
+  addScalingEventListeners();
+
+  effectList.addEventListener('change', onFilterButtonChange);
+  sliderWrapper.classList.add('hidden');
 });
 
 function closeUploadPopup () {
@@ -41,6 +49,12 @@ function closeUploadPopup () {
   body.classList.remove('modal-open');
   document.removeEventListener('keydown', onPopupEscKeydown);
   document.removeEventListener('click', onPopupCloseButtonClick);
+
+  removeScalingEventListeners();
+
+  effectList.removeEventListener('change', onFilterButtonChange);
+  imgPreview.removeAttribute('class');
+  imgPreview.removeAttribute('style');
 }
 
 
@@ -106,3 +120,4 @@ commentField.addEventListener('keydown', (evt) => {
     evt.stopPropagation();
   }
 });
+
