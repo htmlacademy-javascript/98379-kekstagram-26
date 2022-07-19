@@ -12,4 +12,4 @@ function getRandomPositiveInteger(a, b) {
 }
 
 
-export { isEscPressed, getRandomPositiveInteger, checkStringLength };
+export {isEscPressed, getRandomPositiveInteger, checkStringLength};

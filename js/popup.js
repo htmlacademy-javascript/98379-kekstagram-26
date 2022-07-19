@@ -1,4 +1,4 @@
-import { isEscPressed } from './util.js';
+import {isEscPressed} from './util.js';
 
 const MAX_COMMENTS_TO_SHOW = 5;
 const bigPicture = document.querySelector('.big-picture');
@@ -73,4 +73,4 @@ document.addEventListener('keydown', (evt) => {
   }
 });
 
-export { renderPopupComments };
+export {renderPopupComments};

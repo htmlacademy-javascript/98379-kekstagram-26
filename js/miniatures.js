@@ -1,5 +1,5 @@
-import { publicationData } from './main.js';
-import { renderPopupComments } from './popup.js';
+import {publicationData} from './main.js';
+import {renderPopupComments} from './popup.js';
 
 
 const pictures = document.querySelector('.pictures');
@@ -38,4 +38,4 @@ function renderMiniatures() {
   pictures.appendChild(fragment);
 }
 
-export { renderMiniatures };
+export {renderMiniatures};
