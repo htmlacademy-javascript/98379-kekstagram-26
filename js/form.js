@@ -1,6 +1,8 @@
 import {isEscPressed} from './util.js';
 import {onFilterButtonChange, effectList, sliderWrapper, imgPreview} from './filters.js';
 import {addScalingEventListeners, removeScalingEventListeners} from './scale-control.js';
+import {sendData} from './api.js';
+import {showMessageSuccess, showMessageError} from './messages.js';
 
 
 const MAX_STRING_LENGTH = 140;
@@ -11,8 +13,8 @@ const uploadFileField = document.querySelector('#upload-file');
 const imgUpload = document.querySelector('.img-upload__overlay');
 const imgUploadForm = document.querySelector('.img-upload__form');
 const btnCancel = imgUpload.querySelector('.img-upload__cancel');
-// const btnSubmit = imgUpload.querySelector('.img-upload__submit');
 
+const btnSubmit = imgUpload.querySelector('.img-upload__submit');
 
 const hashtagField = imgUpload.querySelector('.text__hashtags');
 const commentField = imgUpload.querySelector('.text__description');
@@ -32,17 +34,32 @@ const onPopupCloseButtonClick = () => {
   closeUploadPopup();
 };
 
-uploadFileField.addEventListener('change', () => {
+const onFocusBlurEscKeydown = () => {
+  commentField.addEventListener('focus', () => {
+    document.removeEventListener('keydown', onPopupEscKeydown);
+  });
+  commentField.addEventListener('blur', () => {
+    document.addEventListener('keydown', onPopupEscKeydown);
+  });
+  hashtagField.addEventListener('focus', () => {
+    document.removeEventListener('keydown', onPopupEscKeydown);
+  });
+  hashtagField.addEventListener('blur', () => {
+    document.addEventListener('keydown', onPopupEscKeydown);
+  });
+};
+
+function showUploadPopup (evt) {
+  imgPreview.src = URL.createObjectURL(evt.target.files[0]);
   imgUpload.classList.remove('hidden');
   body.classList.add('modal-open');
   btnCancel.addEventListener('click', onPopupCloseButtonClick);
-  document.addEventListener('keydown', onPopupEscKeydown);
-
-  addScalingEventListeners();
-
-  effectList.addEventListener('change', onFilterButtonChange);
+  document.addEventListener('keydown',onPopupEscKeydown);
+  onFocusBlurEscKeydown();
   sliderWrapper.classList.add('hidden');
-});
+  addScalingEventListeners();
+  effectList.addEventListener('change', onFilterButtonChange);
+}
 
 function closeUploadPopup () {
   imgUpload.classList.add('hidden');
@@ -55,7 +72,20 @@ function closeUploadPopup () {
   effectList.removeEventListener('change', onFilterButtonChange);
   imgPreview.removeAttribute('class');
   imgPreview.removeAttribute('style');
+
+  imgUploadForm.reset();
 }
+
+
+const blockSubmitButton = () => {
+  btnSubmit.disabled = true;
+  btnSubmit.textContent = 'Публикую...';
+};
+
+const unblockSubmitButton = () => {
+  btnSubmit.disabled = false;
+  btnSubmit.textContent = 'Опубликовать';
+};
 
 
 // Валидация
@@ -108,16 +138,30 @@ pristine.addValidator(hashtagField, getHashtagsToLowerCase, '');
 pristine.addValidator(hashtagField, checkHashtagsSymbols, 'Хэштег начинается c #, содержит только буквы и цифры, не более 20 символов');
 
 
-// отменяем ESC при фокусе на полях ввода
-hashtagField.addEventListener('keydown', (evt) => {
-  if (isEscPressed(evt)) {
-    evt.stopPropagation();
-  }
-});
+const submitForm = (onSuccess) => {
+  imgUploadForm.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    const isValid = pristine.validate();
+    if (isValid) {
+      blockSubmitButton();
+      sendData(
+        () => {
+          onSuccess();
+          unblockSubmitButton();
+          showMessageSuccess();
+          closeUploadPopup();
+        },
+        () => {
+          unblockSubmitButton();
+          showMessageError();
+          closeUploadPopup();
+        },
+        new FormData(evt.target),
+      );
+    }
+  });
+};
 
-commentField.addEventListener('keydown', (evt) => {
-  if (isEscPressed(evt)) {
-    evt.stopPropagation();
-  }
-});
+uploadFileField.addEventListener('change', showUploadPopup);
 
+export {closeUploadPopup, submitForm, showUploadPopup};

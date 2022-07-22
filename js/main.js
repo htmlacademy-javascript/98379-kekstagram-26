@@ -1,10 +1,14 @@
-import {createPublication} from './data.js';
-import {renderMiniatures} from './miniatures.js';
-import './form.js';
+import {renderUserPhotos} from './miniatures.js';
+import {closeUploadPopup} from './form.js';
+import {submitForm} from './form.js';
 import {initEffects} from './filters.js';
+import {getData} from './api.js';
 
-const publicationData = Array.from({ length: 6 }, createPublication);
-renderMiniatures();
+
+getData((pictures) => {
+  renderUserPhotos(pictures);
+});
+
+submitForm(closeUploadPopup);
 initEffects();
 
-export {publicationData};

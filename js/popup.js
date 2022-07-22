@@ -2,75 +2,90 @@ import {isEscPressed} from './util.js';
 
 const MAX_COMMENTS_TO_SHOW = 5;
 const bigPicture = document.querySelector('.big-picture');
-const bigPictureCancelBtn = bigPicture.querySelector('.big-picture__cancel');
-// const commentsLoader = bigPicture.querySelector('.comments-loader');
-// const commentsContainer = bigPicture.querySelector('.social__comments');
-const loadCommentsButton = bigPicture.querySelector('.social__comments-loader');
+const closeButton = bigPicture.querySelector('.big-picture__cancel');
+const commentsLoader = bigPicture.querySelector('.comments-loader');
+const commentsContainer = bigPicture.querySelector('.social__comments');
+const commentsToShowCount = bigPicture.querySelector('.social__comment-count');
 const body = document.querySelector('body');
+let сount = 0;
+let comments = [];
 
-
-let htmlCommentElements = bigPicture.querySelectorAll('.social__comment');
-
-function renderPopupComments(htmlArray, dataArray, count) {
-// удаляем содержимое контейнера с комментариями
-  while (htmlArray.firstChild) {
-    htmlArray.firstChild.remove();
+const onPopupEscKeydown = (evt) => {
+  if (isEscPressed(evt)) {
+    evt.preventDefault();
+    closeBigPicture ();
   }
-  // прячем или показываем кнопку Загрузить ещё
-  if(count <= MAX_COMMENTS_TO_SHOW) {
-    loadCommentsButton.classList.add('hidden');
+};
+
+const onPopupCloseButtonClick = () => {
+  closeBigPicture();
+};
+
+function closeBigPicture () {
+  bigPicture.classList.add('hidden');
+  body.classList.remove('modal-open');
+  document.removeEventListener('keydown', onPopupEscKeydown);
+  document.removeEventListener('click', onPopupCloseButtonClick);
+  commentsLoader.removeEventListener('click', commentsLoaderOnClick);
+  сount = 0;
+  comments = [];
+}
+
+const createCommentItem = (comment) => {
+  const newCommentItem  = document.createElement('li');
+  newCommentItem.classList.add('social__comment');
+  const commentImage = document.createElement('img');
+  commentImage.classList.add('social__picture');
+  commentImage.src = comment.avatar;
+  commentImage.alt = comment.name;
+  commentImage.width = 35;
+  commentImage.height = 35;
+  newCommentItem.appendChild(commentImage);
+
+  const commentText = document.createElement('p');
+  commentText.classList.add('social__text');
+  commentText.textContent = comment.message;
+  newCommentItem.appendChild(commentText);
+  return newCommentItem;
+};
+
+function commentsLoaderOnClick() {
+  // изменяем значение сount прибавляя 5, следовательно slice станет (5, 10), отрисуется еще 5 штук
+  сount += MAX_COMMENTS_TO_SHOW;
+  renderCommentsSlice();
+}
+
+function renderCommentsSlice() {
+  commentsContainer.innerHTML = '';
+  const commentsFragment = document.createDocumentFragment();
+  // создаем срез комментов, будет показываться 5 штук, при клике count перезапишется
+  const commentsToShow = comments.slice(0, сount + MAX_COMMENTS_TO_SHOW);
+  commentsToShow.forEach((comment) => {
+    commentsFragment.appendChild(createCommentItem(comment));
+  });
+  commentsContainer.appendChild(commentsFragment);
+  if (comments.length === commentsToShow.length) {
+    commentsLoader.classList.add('hidden');
+  } else {
+    commentsLoader.classList.remove('hidden');
   }
-  else {
-    loadCommentsButton.classList.remove('hidden');
-  }
-  // создаём и добавляем разметку комментариев в родительский блок
-  for (let i = 0; i < dataArray.length; i++) {
-    const dataComment = dataArray[i];
-    const newCommentItem = document.createElement('li');
-    newCommentItem.classList.add('social__comment');
-    const commentImage = document.createElement('img');
-    commentImage.classList.add('social__picture');
-    commentImage.src = dataComment.avatar;
-    commentImage.alt = dataComment.name;
-    commentImage.width = 35;
-    commentImage.height = 35;
-    newCommentItem.appendChild(commentImage);
-
-    const commentText = document.createElement('p');
-    commentText.classList.add('social__text');
-    commentText.textContent = dataComment.message;
-    newCommentItem.appendChild(commentText);
-
-    htmlArray.appendChild(newCommentItem);
-  }
-  // напитываем комментарии данными отыскивая созданную в прошлом цикле вёрстку
-  for (let i = 0; i < count; i++) {
-    const dataComment = dataArray[i];
-    htmlCommentElements = bigPicture.querySelectorAll('.social__comment');
-    htmlCommentElements[i].querySelector('img').src = dataComment[1].avatar;
-    htmlCommentElements[i].querySelector('p').textContent = dataComment[2].message;
-    htmlCommentElements[i].querySelector('img').alt = dataComment[3].name;
-  }
-
-
-  // htmlCommentElements = Object.entries(htmlCommentElements);
-  // htmlCommentElements.slice(1, 2);
-  // commentsContainer.appendChild(htmlCommentElements);
-
-
+  commentsToShowCount.innerHTML = `${commentsToShow.length} из <span class="comments-count">${comments.length}</span> комментариев`;
 }
 
 
-bigPictureCancelBtn.addEventListener('click', () => {
-  bigPicture.classList.add('hidden');
-  body.classList.remove('modal-open');
-});
+const showBigPicture = (picture) => {
+  bigPicture.classList.remove('hidden');
+  body.classList.add('modal-open');
+  bigPicture.querySelector('.big-picture__img img').src = picture.url;
+  bigPicture.querySelector('.likes-count').textContent = picture.likes;
+  bigPicture.querySelector('.comments-count').textContent = picture.comments.length;
+  bigPicture.querySelector('.social__caption').textContent = picture.description;
+  comments = picture.comments;
+  renderCommentsSlice();
+  commentsLoader.addEventListener('click', commentsLoaderOnClick);
 
-document.addEventListener('keydown', (evt) => {
-  if (isEscPressed(evt)) {
-    bigPicture.classList.add('hidden');
-    body.classList.remove('modal-open');
-  }
-});
+  closeButton.addEventListener('click', onPopupCloseButtonClick);
+  document.addEventListener('keydown', onPopupEscKeydown);
+};
 
-export {renderPopupComments};
+export {showBigPicture};
