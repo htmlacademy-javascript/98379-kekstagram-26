@@ -4,7 +4,7 @@ import {addScalingEventListeners, removeScalingEventListeners} from './scale-con
 import {sendData} from './api.js';
 import {showMessageSuccess, showMessageError} from './messages.js';
 
-
+const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png', 'heic'];
 const MAX_STRING_LENGTH = 140;
 const HASHTAGS_QUANTITY = 5;
 
@@ -19,6 +19,17 @@ const btnSubmit = imgUpload.querySelector('.img-upload__submit');
 const hashtagField = imgUpload.querySelector('.text__hashtags');
 const commentField = imgUpload.querySelector('.text__description');
 const hashtagRegex = /^#[A-Za-zА-Яа-яЁё0-9]{1,19}$/;
+const fileChooser = document.querySelector('.img-upload__input');
+
+const uploadImage = () => {
+  const file = fileChooser.files[0];
+  const fileName = file.name.toLowerCase();
+
+  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+  if (matches) {
+    imgPreview.src = URL.createObjectURL(file);
+  }
+};
 
 
 // Реализуем открытие и закрытие формы
@@ -50,7 +61,6 @@ const onFocusBlurEscKeydown = () => {
 };
 
 function showUploadPopup (evt) {
-  imgPreview.src = URL.createObjectURL(evt.target.files[0]);
   imgUpload.classList.remove('hidden');
   body.classList.add('modal-open');
   btnCancel.addEventListener('click', onPopupCloseButtonClick);
@@ -59,6 +69,7 @@ function showUploadPopup (evt) {
   sliderWrapper.classList.add('hidden');
   addScalingEventListeners();
   effectList.addEventListener('change', onFilterButtonChange);
+  uploadImage(evt);
 }
 
 function closeUploadPopup () {
